@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/idp_dev
+    username: ${POSTGRES_USERNAME_DEV}
+    password: ${POSTGRES_PASSWORD_DEV}
+  flyway:
+    enabled: true
+    locations:
+      - classpath:db/migration
+      - classpath:db/migration-dev
