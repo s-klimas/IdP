@@ -1,3 +1,9 @@
 spring:
   application:
     name: IdP
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://localhost:9000
+server:
+  port: 9000
