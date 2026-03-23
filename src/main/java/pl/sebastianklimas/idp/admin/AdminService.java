@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import pl.sebastianklimas.idp.admin.dto.CreateClientRequest;
 import pl.sebastianklimas.idp.admin.dto.CreateClientResponse;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.UUID;
 
 @Service
@@ -44,6 +46,9 @@ public class AdminService {
     }
 
     public String generateSecureSecret() {
-        return "";
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 }
