@@ -22,7 +22,6 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final RegisteredClientRepository registeredClientRepository;
 
-    @Deprecated
     public CreateClientResponse registerClient(CreateClientRequest createClientRequest) {
 
         String clientId = UUID.randomUUID().toString();
