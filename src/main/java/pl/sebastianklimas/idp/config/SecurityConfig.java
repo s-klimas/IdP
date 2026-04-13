@@ -1,5 +1,7 @@
 package pl.sebastianklimas.idp.config;
 
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,33 +12,48 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.ClientSecretBasicAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.ClientSecretPostAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
+import pl.sebastianklimas.idp.auth.PasswordGrantAuthenticationConverter;
+import pl.sebastianklimas.idp.auth.PasswordGrantAuthenticationProvider;
+import pl.sebastianklimas.idp.users.UserRepository;
 
 @Configuration
 public class SecurityConfig {
     @Bean
-    @Order(1) // endpointy OAuth2
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+    @Order(1)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
+            HttpSecurity http,
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            OAuth2AuthorizationService authorizationService,
+            OAuth2TokenGenerator<?> tokenGenerator) throws Exception {
 
         http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .with(authorizationServerConfigurer, authServer -> authServer
-                        .clientAuthentication(clientAuth -> clientAuth
-                                .authenticationConverter(new ClientSecretBasicAuthenticationConverter())
-                                .authenticationConverter(new ClientSecretPostAuthenticationConverter()))
-                        .oidc(Customizer.withDefaults())
-                )
+                .oauth2AuthorizationServer(authorizationServer -> {
+                    http.securityMatcher(authorizationServer.getEndpointsMatcher());
+                    authorizationServer
+                            .clientAuthentication(clientAuth -> clientAuth
+                                    .authenticationConverter(new ClientSecretBasicAuthenticationConverter())
+                                    .authenticationConverter(new ClientSecretPostAuthenticationConverter()))
+                            .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                                    .accessTokenRequestConverter(new PasswordGrantAuthenticationConverter())
+                                    .authenticationProvider(new PasswordGrantAuthenticationProvider(
+                                            userRepository, passwordEncoder,
+                                            authorizationService, tokenGenerator)))
+                            .oidc(Customizer.withDefaults());
+                })
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher())
-                )
-                .formLogin(Customizer.withDefaults());
+                        .ignoringRequestMatchers("/oauth2/**")
+                );
 
         return http.build();
     }
