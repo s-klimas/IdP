@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
 import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
@@ -86,11 +87,10 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         authorizationService.save(authorization);
 
-        return new PasswordGrantAuthenticationToken(
-                user.getEmail(),
+        return new OAuth2AccessTokenAuthenticationToken(
                 registeredClient,
-                token.getScopes(),
-                tokenContext.getPrincipal().getAuthorities()
+                tokenContext.getPrincipal(),
+                accessToken
         );
     }
 
