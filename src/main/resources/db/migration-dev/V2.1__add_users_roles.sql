@@ -8,12 +8,12 @@ VALUES
     (
         (SELECT id FROM roles WHERE name = 'Admin'),
         'admin@example.com',
-        '{noop}adminpass'
+        '$2a$10$2PWAz5EWL30tVNl9dXg1..5QpEnmsCLWL83y7nir2BMM1yV3I0I.C' -- adminpass
     ),
     (
         (SELECT id FROM roles WHERE name = 'User'),
         'defaultuser@example.com',
-        '{noop}pass'
+        '$2a$10$6gBWNrgdWw3YwOP8rniYIuZlrkXoND/a0l7hMA3M2rG2PoI9rWVSm' -- pass
     );
 
 INSERT INTO user_role (user_id, role_id)

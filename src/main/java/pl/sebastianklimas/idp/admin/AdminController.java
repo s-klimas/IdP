@@ -15,7 +15,6 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @Deprecated
     @PostMapping("/register-client")
     public CreateClientResponse register(@RequestBody CreateClientRequest createClientRequest) {
         return adminService.registerClient(createClientRequest);
