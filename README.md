@@ -15,3 +15,16 @@
 | **Utilities**   | ![Lombok](https://img.shields.io/badge/Lombok-A50?style=for-the-badge)                                                                                                                                                            |
 
 ---
+
+## 📝 Description
+
+**Identity Provider** is a standalone OAuth2 Authorization Server intended to serve as a shared authentication layer across personal microservices projects. Resource servers can delegate all authentication and token validation to this IdP instead of managing their own security logic.
+
+It supports two grant type flows:
+
+- 🤝 **Client Credentials** — for service-to-service communication
+- 🔑 **Custom Password Grant** — for user-facing applications where username/password authentication is needed
+
+The server issues **JWT access tokens** with role-based claims, persists all client registrations and token data in **PostgreSQL**, and uses **Flyway** for schema management. A protected admin endpoint allows dynamic registration of new OAuth2 clients at runtime.
+
+---
