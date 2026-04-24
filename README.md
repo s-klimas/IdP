@@ -28,3 +28,12 @@ It supports two grant type flows:
 The server issues **JWT access tokens** with role-based claims, persists all client registrations and token data in **PostgreSQL**, and uses **Flyway** for schema management. A protected admin endpoint allows dynamic registration of new OAuth2 clients at runtime.
 
 ---
+
+## 🔐 Environment Variables
+
+| Variable                | Description               | Example                                      |
+|-------------------------|---------------------------|----------------------------------------------|
+| `POSTGRES_USERNAME_PROD`| Database username         | `postgres`                                   |
+| `POSTGRES_PASSWORD_PROD`| Database password         | `password`                                   |
+
+---
