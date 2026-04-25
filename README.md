@@ -37,3 +37,21 @@ The server issues **JWT access tokens** with role-based claims, persists all cli
 | `POSTGRES_PASSWORD_PROD`| Database password         | `password`                                   |
 
 ---
+
+## 💡 Interesting Techniques
+
+- **Custom Password Grant Type** — A fully custom `password` grant flow is implemented via [PasswordGrantAuthenticationConverter](src/main/java/pl/sebastianklimas/idp/auth/PasswordGrantAuthenticationConverter.java) (extracts credentials from the HTTP request), [PasswordGrantAuthenticationToken](src/main/java/pl/sebastianklimas/idp/auth/PasswordGrantAuthenticationToken.java) (carries unauthenticated and authenticated states), and [PasswordGrantAuthenticationProvider](src/main/java/pl/sebastianklimas/idp/auth/PasswordGrantAuthenticationProvider.java) (validates credentials and generates the token). The provider always returns `OAuth2AccessTokenAuthenticationToken` so that the `OAuth2TokenEndpointFilter` can correctly build the HTTP response.
+
+- **Multi-Chain `SecurityFilterChain` Architecture** — Three separate filter chains are defined with `@Order` to cleanly separate concerns: the `@Order(1)` chain handles all OAuth2 endpoints via `getEndpointsMatcher()`, while the `@Order(2)` chain scopes the `/admin/**` endpoint and restricts access to localhost only using `IpAddressMatcher` with OR logic for both `127.0.0.1` and `::1` (IPv6 loopback).
+
+- **IP-Restricted Admin Endpoint** — The `/admin/register-client` endpoint is only accessible from the local machine. Access control is implemented with a custom `AuthorizationManager` lambda that inspects `HttpServletRequest` directly, without requiring any authentication mechanism.
+
+- **Cryptographically Secure Client Secret Generation** — When registering a new OAuth2 client, the [AdminService](src/main/java/pl/sebastianklimas/idp/admin/AdminService.java) generates a 32-byte random secret using `SecureRandom`, encodes it as Base64URL, and returns it once in plaintext. Only the BCrypt hash is stored, making it impossible to recover the secret after initial registration.
+
+- **JDBC-backed OAuth2 Persistence** — Both `RegisteredClientRepository` and `OAuth2AuthorizationService` use their JDBC implementations (`JdbcRegisteredClientRepository`, `JdbcOAuth2AuthorizationService`), ensuring full persistence of clients and issued tokens in PostgreSQL across restarts.
+
+- **Delegating Token Generator** — The `OAuth2TokenGenerator` is assembled as a `DelegatingOAuth2TokenGenerator` composed of `JwtGenerator`, `OAuth2AccessTokenGenerator`, and `OAuth2RefreshTokenGenerator`, providing flexible token type support from a single bean.
+
+- **User Enumeration Prevention** — In [PasswordGrantAuthenticationProvider](src/main/java/pl/sebastianklimas/idp/auth/PasswordGrantAuthenticationProvider.java), both "user not found" and "wrong password" paths throw the same `OAuth2AuthenticationException(INVALID_GRANT)`, preventing attackers from inferring whether a given email exists in the system.
+
+---
