@@ -55,3 +55,26 @@ The server issues **JWT access tokens** with role-based claims, persists all cli
 - **User Enumeration Prevention** — In [PasswordGrantAuthenticationProvider](src/main/java/pl/sebastianklimas/idp/auth/PasswordGrantAuthenticationProvider.java), both "user not found" and "wrong password" paths throw the same `OAuth2AuthenticationException(INVALID_GRANT)`, preventing attackers from inferring whether a given email exists in the system.
 
 ---
+
+## 🧩 Project Structure
+
+```
+/src
+  /main/java/pl/sebastianklimas/idp
+    /admin         → Admin controller, service, and DTOs for client registration
+    /auth          → Custom password grant converter, token, and provider
+    /config        → Authorization server, security filter chains, and password encoder config
+    /users         → User and Role entities, UserRepository
+  /resources
+    /db/migration  → Flyway SQL migration scripts
+    application.yml
+    application-prod.yml
+```
+
+- **/admin**: Exposes a localhost-only REST endpoint to dynamically register new OAuth2 clients at runtime.
+- **/auth**: Full implementation of the custom `password` grant type — converter, token, and authentication provider.
+- **/config**: Split into [AuthorizationServerConfig](src/main/java/pl/sebastianklimas/idp/config/AuthorizationServerConfig.java) (token infrastructure beans), [SecurityConfig](src/main/java/pl/sebastianklimas/idp/config/SecurityConfig.java) (filter chains), and [PasswordConfig](src/main/java/pl/sebastianklimas/idp/config/PasswordConfig.java) (BCrypt encoder).
+- **/users**: JPA entities for [User](src/main/java/pl/sebastianklimas/idp/users/User.java) and [Role](src/main/java/pl/sebastianklimas/idp/users/Role.java) with a `ManyToMany` join, and a [UserRepository](src/main/java/pl/sebastianklimas/idp/users/UserRepository.java) used by the password grant provider.
+- **/db/migration**: Flyway scripts managing `users`, `roles`, `user_role`, `oauth2_registered_client`, and `oauth2_authorization` tables.
+
+---
