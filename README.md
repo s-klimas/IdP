@@ -78,3 +78,14 @@ The server issues **JWT access tokens** with role-based claims, persists all cli
 - **/db/migration**: Flyway scripts managing `users`, `roles`, `user_role`, `oauth2_registered_client`, and `oauth2_authorization` tables.
 
 ---
+
+## 🏫 Notable Technologies and Libraries
+
+- **Spring Authorization Server** — Provides the OAuth2/OIDC server infrastructure, token endpoint, and client repository abstractions.
+- **Spring Security** — Underpins the multi-chain filter configuration, IP-based access control, and authentication architecture.
+- **Nimbus JOSE + JWT** — Used via `NimbusJwtEncoder` for signing and encoding JWT access tokens with a `JWKSource`.
+- **Flyway** — Manages all database schema migrations for both application tables and required Spring Authorization Server tables.
+- **Lombok** — Reduces boilerplate across DTOs and service classes with `@Getter`, `@Setter`, `@AllArgsConstructor`, and `@RequiredArgsConstructor`.
+- **PostgreSQL** — Primary database for persisting users, roles, registered clients, and issued authorizations.
+
+---
