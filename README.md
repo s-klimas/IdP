@@ -89,3 +89,15 @@ The server issues **JWT access tokens** with role-based claims, persists all cli
 - **PostgreSQL** — Primary database for persisting users, roles, registered clients, and issued authorizations.
 
 ---
+
+## 🧠 Key Features
+
+✅ Custom `password` grant type with full Spring Authorization Server integration  
+✅ Client Credentials flow for service-to-service authentication  
+✅ JWT access tokens with role-based claims  
+✅ JDBC-persisted clients and tokens (survives restarts)  
+✅ IP-restricted admin API for dynamic client registration  
+✅ Cryptographically secure client secret generation  
+✅ User enumeration protection  
+✅ Flyway-managed schema with Spring Authorization Server tables  
+✅ Designed as a reusable IdP for personal microservices ecosystems
