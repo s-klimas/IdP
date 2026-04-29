@@ -4,6 +4,6 @@ spring:
   security:
     oauth2:
       authorizationserver:
-        issuer: http://localhost:9000
+        issuer: https://localhost:9443 # changing to https -> using nginx
 server:
   port: 9000
